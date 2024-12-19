@@ -407,7 +407,7 @@ def get_info_set(filename: str) -> tuple[set, set]:
 
 ALL_BUILDINGS, DEPARTMENTS = get_info_set("buildings_departments.txt")
 
-DEPARTMENTS_GROUPS = {
+DEPARTMENTS_GROUP = {
     "Bioinformatics": "NCSU-COS-BRC",
     "Biology": "NCSU-COS-BIO",
     "Chemistry": "NCSU-COS-CHEM",
@@ -469,7 +469,7 @@ def building_department_input(first_name: str, last_name: str) -> None:
     get_selection_label(building_department_frame, "department")
 
     department_str_var = get_dropdown(
-        building_department_frame, lambda: list(DEPARTMENTS_GROUPS.keys()))[0]
+        building_department_frame, lambda: list(DEPARTMENTS_GROUP.keys()))[0]
 
     def get_building_options():
         department = department_str_var.get()
@@ -526,7 +526,7 @@ def save_input(first_name: str, last_name: str,
     # command = (
     #     f'sudo /usr/bin/jamf recon -realname "{first_name} {last_name}"'
     #     f' -building "{building}"'
-    #     # f' -department {DEPARTMENTS_GROUPS[department]}'
+    #     # f' -department {DEPARTMENTS_GROUP[department]}'
     # )
 
     # jamf command:
@@ -539,7 +539,7 @@ def save_input(first_name: str, last_name: str,
 
     formatted_information = (
         f"{current_time} - {first_name} {last_name}"
-        f" - {building} - {DEPARTMENTS_GROUPS[department]} ({department})\n"
+        f" - {building} - {DEPARTMENTS_GROUP[department]} ({department})\n"
     )
 
     with open("info_log.txt", "a", encoding="utf-8") as f:
