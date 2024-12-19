@@ -365,15 +365,23 @@ def get_dropdown(current_frame: ctk.CTkFrame,
     return dropdown_str_var, dropdown
 
 
-def get_buildings_list(filename: str) -> list[str]:
-    """Reads lines from text file and returns a list of the contents.
+def get_info_set(filename: str) -> tuple[set, set]:
+    """
+    Parses a file to extract and organize building names and department names.
 
     Args:
-        filename (str): The file name to parse
+        filename (str): The path to the file containing building and department
+                        information in the format:
+                        "Building Name: Department1, Department2, ...".
 
     Returns:
-        list[str]: List of parsed information
+        tuple[set, set]:
+
+            - A sorted set of unique building names (case-insensitive).
+            - A sorted set of unique department names (case-insensitive), with
+              "Other COS Department" appended at the end.
     """
+
     building_set = set()
     department_set = set()
 
@@ -397,7 +405,7 @@ def get_buildings_list(filename: str) -> list[str]:
     return (building_set, department_set)
 
 
-ALL_BUILDINGS, DEPARTMENTS = get_buildings_list("buildings_departments.txt")
+ALL_BUILDINGS, DEPARTMENTS = get_info_set("buildings_departments.txt")
 
 DEPARTMENTS_GROUPS = {
     "Bioinformatics": "NCSU-COS-BRC",
