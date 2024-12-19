@@ -117,25 +117,6 @@ def get_font(scaling: int, bold: bool = False) -> tuple[str, int, str]:
     return (BASE_FONT, scale(scaling), "bold")
 
 
-def get_buildings_list(filename: str) -> list[str]:
-    """Reads lines from text file and returns a list of the contents.
-
-    Args:
-        filename (str): The file name to parse
-
-    Returns:
-        list[str]: List of parsed information
-    """
-    info_list = []
-
-    with open(filename, "r", encoding="utf-8") as file:
-        for line in file:
-            if line.strip() != "":
-                info_list.append(line.strip())
-
-    return sorted(info_list)
-
-
 def load_background(tk: ctk.CTk, image_path: str):
     """
     Load and scale an image to fit the dimensions of a CTk window.
@@ -384,32 +365,81 @@ def get_dropdown(current_frame: ctk.CTkFrame,
     return dropdown_str_var, dropdown
 
 
-BUILDINGS = get_buildings_list("buildings.txt")
+def get_buildings_list(filename: str) -> list[str]:
+    """Reads lines from text file and returns a list of the contents.
 
-DEPARTMENTS = {
-    "Biology": "NCSU-COS-BIO",
+    Args:
+        filename (str): The file name to parse
+
+    Returns:
+        list[str]: List of parsed information
+    """
+    building_set = set()
+    department_set = set()
+
+    with open(filename, "r", encoding="utf-8") as file:
+        for line in file:
+            if ":" in line:
+                building_name, department_names = map(
+                    str.strip, line.split(":", 1))
+                if building_name:
+                    building_set.add(building_name)
+                if department_names:
+                    for department in map(str.strip,
+                                          department_names.split(",")):
+                        if department != "Other":
+                            department_set.add(department)
+
+    building_set = sorted(building_set, key=str.lower)
+    department_set = sorted(department_set, key=str.lower)
+    department_set.append("Other COS Department")
+
+    return (building_set, department_set)
+
+
+ALL_BUILDINGS, DEPARTMENTS = get_buildings_list("buildings_departments.txt")
+
+DEPARTMENTS_GROUPS = {
     "Bioinformatics": "NCSU-COS-BRC",
+    "Biology": "NCSU-COS-BIO",
     "Chemistry": "NCSU-COS-CHEM",
     "Mathematics": "NCSU-COS-MATH",
     "MEAS": "NCSU-COS-MEAS",
     "Physics": "NCSU-COS-PHYSICS",
     "SCO": "NCSU-COS-SCO",
     "Statistics": "NCSU-COS-STAT",
-    "Other": "NCSU-COS"
+    "Other COS Department": "NCSU-COS"
 }
 
 DEPARTMENT_BUILDINGS = {
-    "Biology": [],
-    "Bioinformatics": [],
-    "Chemistry": ["SAS Hall", "Cox Hall",
-                  "Dabney Hall"],
-    "Mathematics": ["SAS Hall", "Cox Hall",
-                    "Dabney Hall", "Language and Computer Laboratories"],
-    "MEAS": [],
-    "Physics": [],
-    "SCO": [],
-    "Statistics": ["SAS Hall"],
-    "Other": []  # All building options
+    'Biology': ['Bostian Hall',
+                'David Clark Labs',
+                'Fox Teaching Lab',
+                'Grinnells Lab',
+                'Park Shops',
+                'Plant Sciences Building',
+                'Thomas Hall',
+                'Toxicology Building',
+                'Varsity Research Building'],
+    'Bioinformatics': ['Ricks Hall'],
+    'Chemistry': ['Cox Hall',
+                  'Dabney Hall',
+                  'Fox Teaching Lab'],
+    'Mathematics': ['Cox Hall',
+                    'Language and Computer Laboratories',
+                    'SAS Hall'],
+    'MEAS': ['Jordan Hall',
+             'Jordan Hall Addition',
+             'MEAS Field Lab',
+             'Varsity Research Building'],
+    'Physics': ['Burlington Laboratory',
+                'Cox Hall',
+                'Fox Teaching Lab',
+                'Partners III',
+                'Riddick Hall'],
+    'Statistics': ['SAS Hall'],
+    'SCO': ['SCO'],
+    'Other': ALL_BUILDINGS
 }
 
 
@@ -431,11 +461,11 @@ def building_department_input(first_name: str, last_name: str) -> None:
     get_selection_label(building_department_frame, "department")
 
     department_str_var = get_dropdown(
-        building_department_frame, lambda: list(DEPARTMENTS.keys()))[0]
+        building_department_frame, lambda: list(DEPARTMENTS_GROUPS.keys()))[0]
 
     def get_building_options():
         department = department_str_var.get()
-        return DEPARTMENT_BUILDINGS.get(department, BUILDINGS)
+        return DEPARTMENT_BUILDINGS.get(department, ALL_BUILDINGS)
 
     get_selection_label(building_department_frame, "building")
 
@@ -443,11 +473,13 @@ def building_department_input(first_name: str, last_name: str) -> None:
         building_department_frame, get_building_options)
 
     def update_building_dropdown(*args):  # pylint: disable=W0613
-        building_dropdown.configure(values=get_building_options())
-        if get_building_options():
-            building_str_var.set(get_building_options()[0])
+        new_options = get_building_options()
+        building_dropdown.configure(values=new_options)
+        building_str_var.set(new_options[0])
 
-    department_str_var.trace_add("write", update_building_dropdown)
+    if get_building_options():
+        building_str_var.set(get_building_options()[0])
+        department_str_var.trace_add("write", update_building_dropdown)
 
     def proceed():
         building = building_str_var.get()
@@ -458,7 +490,8 @@ def building_department_input(first_name: str, last_name: str) -> None:
     submit_button = make_button(
         building_department_frame, text="Submit", command=proceed)
     root.bind("<Return>", lambda event: proceed())
-    submit_button.pack(pady=scale(STANDARD_PADY), padx=scale(STANDARD_PADX))
+    submit_button.pack(pady=scale(STANDARD_PADY),
+                       padx=scale(STANDARD_PADX))
 
 
 def save_input(first_name: str, last_name: str,
@@ -485,7 +518,7 @@ def save_input(first_name: str, last_name: str,
     # command = (
     #     f'sudo /usr/bin/jamf recon -realname "{first_name} {last_name}"'
     #     f' -building "{building}"'
-    #     # f' -department {DEPARTMENTS[department]}'
+    #     # f' -department {DEPARTMENTS_GROUPS[department]}'
     # )
 
     # jamf command:
@@ -498,7 +531,7 @@ def save_input(first_name: str, last_name: str,
 
     formatted_information = (
         f"{current_time} - {first_name} {last_name}"
-        f" - {building} - {DEPARTMENTS[department]} ({department})\n"
+        f" - {building} - {DEPARTMENTS_GROUPS[department]} ({department})\n"
     )
 
     with open("info_log.txt", "a", encoding="utf-8") as f:
