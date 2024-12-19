@@ -1,24 +1,24 @@
-SAS Hall : Mathematics, Statistics
-Park Shops : Biology
-Riddick Hall : Physics
-Burlington Laboratory : Physics
-Ricks Hall : Bioinformatics
-Polk Hall : Other
-Broughton Hall : Other
-Bureau of Mines : Other
-Dabney Hall : Chemistry
-Cox Hall : Physics, Chemistry
-Jordan Hall : MEAS
-Jordan Hall Addition : MEAS
-Bostian Hall : Biology
-Thomas Hall : Biology
-David Clark Labs : Biology, Statistics
-Fox Teaching Lab : Physics, Chemistry
-Grinnells Lab : Biology
-MEAS Field Lab : MEAS
-Varsity Research Building : Biology, MEAS
-Toxicology Building : Biology
-Partners III : Physics, Chemistry
-Plant Sciences Building : Biology
-Cherry Building : Other
+SAS Hall: Mathematics, Statistics
+Park Shops: Biology
+Riddick Hall: Physics
+Burlington Laboratory: Physics
+Ricks Hall: Bioinformatics
+Polk Hall: Other
+Broughton Hall: Other
+Bureau of Mines: Other
+Dabney Hall: Chemistry
+Cox Hall: Physics, Chemistry
+Jordan Hall: MEAS
+Jordan Hall Addition: MEAS
+Bostian Hall: Biology
+Thomas Hall: Biology
+David Clark Labs: Biology, Statistics
+Fox Teaching Lab: Physics, Chemistry
+Grinnells Lab: Biology
+MEAS Field Lab: MEAS
+Varsity Research Building: Biology, MEAS
+Toxicology Building: Biology
+Partners III: Physics, Chemistry
+Plant Sciences Building: Biology
+Cherry Building: Other
 SCO: SCO
