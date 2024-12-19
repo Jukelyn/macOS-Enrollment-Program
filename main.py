@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""This program provides a GUI for gathering user input for enrollment.
+"""This project was made possible by Mehraz Ahmed with the help of Imraan Khan.
+
+This GUI tool, designed for NC State COS, is used for JAMF enrollment.
 
 The program uses the CustomTkinter library to display a series of pages:
 
@@ -31,8 +33,6 @@ Dependencies:
 * Callable for typehinting
 * strftime and subprocess for handling time formatting and executing system
   commands.
-
-This project was made possible by Mehraz Ahmed with the help of Imraan Khan.
 """
 import subprocess
 from time import strftime
@@ -42,11 +42,9 @@ from PIL import Image
 import customtkinter as ctk
 from customtkinter import CTkImage
 
+# Add that it's for NC State
 __author__ = "Mehraz Ahmed and Imraan Azad Khan"
-__copyright__ = "Copyright 2024, macOS Enrollment Program"
 __credits__ = ["Mehraz Ahmed", "Imraan Azad Khan"]
-__license__ = "CC BY-NC-ND (https://creativecommons.org/licenses/by-nc-nd/4.0)"
-__version__ = "4.0"
 __maintainer__ = "Mehraz Ahmed"
 __email__ = "mahmed6@ncsu.edu"
 __status__ = "Development"  # "Prototype", "Development", or "Production"
@@ -419,36 +417,37 @@ DEPARTMENTS_GROUP = {
     "Other COS Department": "NCSU-COS"
 }
 
-DEPARTMENT_BUILDINGS = {
-    'Biology': ['Bostian Hall',
-                'David Clark Labs',
-                'Fox Teaching Lab',
-                'Grinnells Lab',
-                'Park Shops',
-                'Plant Sciences Building',
-                'Thomas Hall',
-                'Toxicology Building',
-                'Varsity Research Building'],
-    'Bioinformatics': ['Ricks Hall'],
-    'Chemistry': ['Cox Hall',
-                  'Dabney Hall',
-                  'Fox Teaching Lab'],
-    'Mathematics': ['Cox Hall',
-                    'Language and Computer Laboratories',
-                    'SAS Hall'],
-    'MEAS': ['Jordan Hall',
-             'Jordan Hall Addition',
-             'MEAS Field Lab',
-             'Varsity Research Building'],
-    'Physics': ['Burlington Laboratory',
-                'Cox Hall',
-                'Fox Teaching Lab',
-                'Partners III',
-                'Riddick Hall'],
-    'Statistics': ['SAS Hall'],
-    'SCO': ['SCO'],
-    'Other': ALL_BUILDINGS
-}
+# All departments should see all buildings
+# DEPARTMENT_BUILDINGS = {
+#     'Biology': ['Bostian Hall',
+#                 'David Clark Labs',
+#                 'Fox Teaching Lab',
+#                 'Grinnells Lab',
+#                 'Park Shops',
+#                 'Plant Sciences Building',
+#                 'Thomas Hall',
+#                 'Toxicology Building',
+#                 'Varsity Research Building'],
+#     'Bioinformatics': ['Ricks Hall'],
+#     'Chemistry': ['Cox Hall',
+#                   'Dabney Hall',
+#                   'Fox Teaching Lab'],
+#     'Mathematics': ['Cox Hall',
+#                     'Language and Computer Laboratories',
+#                     'SAS Hall'],
+#     'MEAS': ['Jordan Hall',
+#              'Jordan Hall Addition',
+#              'MEAS Field Lab',
+#              'Varsity Research Building'],
+#     'Physics': ['Burlington Laboratory',
+#                 'Cox Hall',
+#                 'Fox Teaching Lab',
+#                 'Partners III',
+#                 'Riddick Hall'],
+#     'Statistics': ['SAS Hall'],
+#     'SCO': ['SCO'],
+#     'Other': ALL_BUILDINGS
+# }
 
 
 def building_department_input(first_name: str, last_name: str) -> None:
@@ -471,23 +470,23 @@ def building_department_input(first_name: str, last_name: str) -> None:
     department_str_var = get_dropdown(
         building_department_frame, lambda: list(DEPARTMENTS_GROUP.keys()))[0]
 
-    def get_building_options():
-        department = department_str_var.get()
-        return DEPARTMENT_BUILDINGS.get(department, ALL_BUILDINGS)
+    # def get_building_options():
+    #     department = department_str_var.get()
+    #     return DEPARTMENT_BUILDINGS.get(department, ALL_BUILDINGS)
 
     get_selection_label(building_department_frame, "building")
 
-    building_str_var, building_dropdown = get_dropdown(
-        building_department_frame, get_building_options)
+    building_str_var, _ = get_dropdown(
+        building_department_frame, lambda: ALL_BUILDINGS)
 
-    def update_building_dropdown(*args):  # pylint: disable=W0613
-        new_options = get_building_options()
-        building_dropdown.configure(values=new_options)
-        building_str_var.set(new_options[0])
+    # def update_building_dropdown(*args):  # pylint: disable=W0613
+    #     new_options = get_building_options()
+    #     building_dropdown.configure(values=new_options)
+    #     building_str_var.set(new_options[0])
 
-    if get_building_options():
-        building_str_var.set(get_building_options()[0])
-        department_str_var.trace_add("write", update_building_dropdown)
+    # if get_building_options():
+    #     building_str_var.set(get_building_options()[0])
+    #     department_str_var.trace_add("write", update_building_dropdown)
 
     def proceed():
         building = building_str_var.get()
