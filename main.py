@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """This project was made possible by Mehraz Ahmed with the help of Imraan Khan.
 
 This GUI tool, designed for NC State COS, is used for JAMF enrollment.
@@ -42,7 +41,6 @@ from PIL import Image
 import customtkinter as ctk
 from customtkinter import CTkImage
 
-# Add that it's for NC State
 __author__ = "Mehraz Ahmed and Imraan Azad Khan"
 __credits__ = ["Mehraz Ahmed", "Imraan Azad Khan"]
 __maintainer__ = "Mehraz Ahmed"
@@ -82,7 +80,7 @@ STANDARD_PADX = 20
 ctk.set_appearance_mode("dark")
 
 
-def scale(value):
+def scale(value: float) -> int:
     """
     Scales a given value by a predefined scaling factor.
 
@@ -90,7 +88,7 @@ def scale(value):
         value (float): The value to be scaled.
 
     Returns:
-        int: The scaled value, rounded down to the nearest integer.
+        (int): The scaled value, rounded down to the nearest integer.
     """
     return int(value * SCALING_FACTOR)
 
@@ -115,7 +113,7 @@ def get_font(scaling: int, bold: bool = False) -> tuple[str, int, str]:
     return (BASE_FONT, scale(scaling), "bold")
 
 
-def load_background(tk: ctk.CTk, image_path: str):
+def load_background(tk: ctk.CTk, image_path: str) -> CTkImage:
     """
     Load and scale an image to fit the dimensions of a CTk window.
 
@@ -125,7 +123,7 @@ def load_background(tk: ctk.CTk, image_path: str):
         image_path (str): The file path of the image to be loaded.
 
     Returns:
-        CTkImage: A CTkImage object resized to fit the window dimensions.
+        (CTkImage): A CTkImage object resized to fit the window dimensions.
     """
     img = Image.open(image_path)
     width = tk.winfo_width()
@@ -134,7 +132,7 @@ def load_background(tk: ctk.CTk, image_path: str):
     return CTkImage(img, size=(width, height))
 
 
-def load_banner(image_path: str):
+def load_banner(image_path: str) -> CTkImage:
     """
     Load and resize an image to create a banner.
 
@@ -142,7 +140,8 @@ def load_banner(image_path: str):
         image_path (str): The file path of the image to be loaded.
 
     Returns:
-        CTkImage: A CTkImage object resized to half of its original dimensions.
+        (CTkImage): A CTkImage object resized to half of its original
+                    dimensions.
     """
     img = Image.open(image_path)
     width, height = img.size
@@ -157,7 +156,7 @@ def refresh_window() -> None:
     ensures that any pending updates to the UI are processed immediately.
 
     Returns:
-        None: This function does not return a value.
+        (None): This function does not return a value.
     """
     root.update_idletasks()
     root.update()
@@ -170,7 +169,7 @@ def clear_root() -> None:
     changes.
 
     Returns:
-        None: This function does not return a value.
+        (None): This function does not return a value.
     """
     for widget in root.pack_slaves():
         widget.destroy()
@@ -190,7 +189,7 @@ def get_name_label(working_frame: ctk.CTkFrame,
                          display in the label.
 
     Returns:
-        ctk.CTkLabel: The created label widget with the specified text and
+        (ctk.CTkLabel): The created label widget with the specified text and
                       styling.
     """
     text = f"{name_part} Name:"
@@ -200,18 +199,18 @@ def get_name_label(working_frame: ctk.CTkFrame,
     return label
 
 
-def grid_position(current_widget, row: int, col: int):
+def grid_position(current_widget: ctk.CTkLabel, row: int, col: int) -> None:
     """
     Places widgets in a grid layout with scaling and padding.
 
     Args:
-        current_widget: The widget to be placed in the grid.
+        current_widget (ctk.CTkLabel): The widget to be placed in the grid.
         row (int): The row index in the grid layout.
         col (int): The column index in the grid layout.
 
     Returns:
-        None: This function places the widget in the grid and does not return
-              a value.
+        (None): The return value of the `grid()` method is None. This function
+                places the widget in the grid and does not return a value.
     """
     sticky = "e" if isinstance(current_widget, ctk.CTkLabel) else ""
     return current_widget.grid(row=row, column=col,
@@ -232,8 +231,8 @@ def get_entry_field(current_frame: ctk.CTkFrame,
                          used as a placeholder text.
 
     Returns:
-        ctk.CTkEntry: The created entry field widget with the specified
-                      placeholder text and styling.
+        (ctk.CTkEntry): The created entry field widget with the specified
+                        placeholder text and styling.
     """
 
     return ctk.CTkEntry(current_frame, font=get_font(SMALL_FONT_SIZE),
@@ -254,8 +253,8 @@ def make_button(current_frame: ctk.CTkFrame, text: str,
                                       button is clicked.
 
     Returns:
-        ctk.CTkButton: The created button widget with the specified text,
-                       command, and styling.
+        (ctk.CTkButton): The created button widget with the specified text,
+                         command, and styling.
     """
     return ctk.CTkButton(current_frame, text=text,
                          font=get_font(SMALLER_FONT_SIZE),
@@ -275,7 +274,7 @@ def name_input_page() -> None:
     next page after validating that both names have been entered.
 
     Returns:
-        None: This function does not return a value.
+        (None): This function does not return a value.
     """
     clear_root()
 
@@ -304,7 +303,7 @@ def name_input_page() -> None:
     last_name_entry = get_entry_field(name_input_frame, "Last")
     grid_position(last_name_entry, 1, 1)
 
-    def proceed():
+    def proceed() -> None:
         first_name = first_name_entry.get()
         last_name = last_name_entry.get()
         if first_name and last_name:
@@ -328,8 +327,8 @@ def get_selection_label(current_frame: ctk.CTkFrame,
                          that will be displayed in the label.
 
     Returns:
-        ctk.CTkLabel: The created label widget with the prompt text and
-                      styling.
+        (ctk.CTkLabel): The created label widget with the prompt text and
+                        styling.
     """
     text = f"Select your {selection}:"
     label = ctk.CTkLabel(current_frame, text=text,
@@ -350,20 +349,24 @@ def get_dropdown(current_frame: ctk.CTkFrame,
                                                 list.
 
     Returns:
-        tuple[ctk.StringVar, ctk.CTkOptionMenu]: StringVar and CTkOptionMenu
-                                                 instance.
+        tuple[ctk.StringVar, ctk.CTkOptionMenu]:
+
+            - StringVar
+            - CTkOptionMenu instance.
     """
     dropdown_str_var = ctk.StringVar(current_frame)
     options = options_func()
-    dropdown_str_var.set(options[0] if options else "")
+    # dropdown_str_var.set(options[0] if options else "")
     dropdown = ctk.CTkOptionMenu(
         current_frame, variable=dropdown_str_var, values=options)
+
     dropdown.pack(pady=scale(STANDARD_PADY), padx=scale(20))
     dropdown.configure(font=get_font(SMALL_FONT_SIZE))
+
     return dropdown_str_var, dropdown
 
 
-def get_info_set(filename: str) -> tuple[set, set]:
+def get_info_set(filename: str) -> tuple[set[str], set[str]]:
     """
     Parses a file to extract and organize building names and department names.
 
@@ -373,7 +376,7 @@ def get_info_set(filename: str) -> tuple[set, set]:
                         "Building Name: Department1, Department2, ...".
 
     Returns:
-        tuple[set, set]:
+        tuple[set[str], set[str]]:
 
             - A sorted set of unique building names (case-insensitive).
             - A sorted set of unique department names (case-insensitive), with
@@ -396,11 +399,13 @@ def get_info_set(filename: str) -> tuple[set, set]:
                         if department != "Other":
                             department_set.add(department)
 
-    building_set = sorted(building_set, key=str.lower)
-    department_set = sorted(department_set, key=str.lower)
-    department_set.append("Other COS Department")
+    buildings: set[str] = set(sorted(building_set, key=str.lower))
+    departments: set[str] = set(sorted(department_set, key=str.lower))
 
-    return (building_set, department_set)
+    buildings.add("Other")
+    departments.add("Other COS Department")
+
+    return (buildings, departments)
 
 
 ALL_BUILDINGS, DEPARTMENTS = get_info_set("buildings_departments.txt")
@@ -459,7 +464,7 @@ def building_department_input(first_name: str, last_name: str) -> None:
         last_name (str): The user's last name
 
     Returns:
-        None: This function does not return a value.
+        (None): This function does not return a value.
     """
     clear_root()
     building_department_frame = ctk.CTkFrame(root)
@@ -518,23 +523,23 @@ def save_input(first_name: str, last_name: str,
         department (str): The selected department.
 
     Returns:
-        None: This function does not return a value.
+        (None): This function does not return a value.
     """
     current_time = strftime("%Y-%m-%d %H:%M:%S")
-    command = f'/usr/bin/say "{first_name} {last_name}"'
-    # command = (
-    #     f'sudo /usr/bin/jamf recon -realname "{first_name} {last_name}"'
-    #     f' -building "{building}"'
-    #     # f' -department {DEPARTMENTS_GROUP[department]}'
-    # )
+    # command = f'/usr/bin/say "{first_name} {last_name}"'
+    command = (
+        f'/usr/bin/jamf recon --realname "{first_name} {last_name}"'
+        f' --building "{building}"'
+        f' --department {DEPARTMENTS_GROUP[department]}'
+    )
 
     # jamf command:
     # /usr/local/bin/jamf recon [flags]
-    # -realname [str]     '-realname "[first name] [last name]"'
-    # -email [str]        '-email [unityID]@ncsu.edu'
-    # -building [str]     '-building [SOMETHING Hall]'
-    # -room [str]         '-room NCSU-[buidling]-####'
-    # -department [str]   '-department NCSU-COS-[department]'
+    # --realname [str]     '--realname "[first name] [last name]"'
+    # --email [str]        '--email [unityID]@ncsu.edu'
+    # --building [str]     '--building [SOMETHING Hall]'
+    # --room [str]         '--room NCSU-[buidling]-####'
+    # --department [str]   '--department NCSU-COS-[department]'
 
     formatted_information = (
         f"{current_time} - {first_name} {last_name}"

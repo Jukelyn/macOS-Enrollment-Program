@@ -1,5 +1,9 @@
 site_name: macOS Enrollment Program Docs
 
+nav:
+  - Home: index.md
+  - Source Code: main.md
+
 theme:
   name: material
   features:
