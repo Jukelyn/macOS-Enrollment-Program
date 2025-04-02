@@ -1,4 +1,5 @@
-"""This project was made possible by Mehraz Ahmed with the help of Imraan Khan.
+"""
+This project was made possible by Mehraz Ahmed with the help of Imraan Khan.
 
 This GUI tool, designed for NC State COS, is used for JAMF enrollment.
 
@@ -17,20 +18,20 @@ The program uses the CustomTkinter library to display a series of pages:
 
 Key notes:
 
-* The GUI elements (labels, entry fields, dropdowns, buttons) are dynamically
+- The GUI elements (labels, entry fields, dropdowns, buttons) are dynamically
   scaled based on a scaling factor for better accessibility.
-* Data is currenly saved in a text file with a timestamp and the user's input.
-* The program is intended for use on macOS with Python v3.9 or higher.
+- Data is currenly saved in a text file with a timestamp and the user's input.
+- The program is intended for use on macOS with Python v3.9 or higher.
 
 The program also includes helper functions for refreshing the window, clearing
 widgets, and centering the window on the screen.
 
 Dependencies:
 
-* CustomTkinter for the GUI components.
-* Pillow for image processing (background and banner images)
-* Callable for typehinting
-* strftime and subprocess for handling time formatting and executing system
+- CustomTkinter for the GUI components.
+- Pillow for image processing (background and banner images)
+- Callable for typehinting
+- strftime and subprocess for handling time formatting and executing system
   commands.
 """
 import subprocess
@@ -38,14 +39,14 @@ from time import strftime
 from typing import Callable
 
 from PIL import Image
-import customtkinter as ctk
 from customtkinter import CTkImage
+import customtkinter as ctk
 
 __author__ = "Mehraz Ahmed and Imraan Azad Khan"
 __credits__ = ["Mehraz Ahmed", "Imraan Azad Khan"]
 __maintainer__ = "Mehraz Ahmed"
 __email__ = "mahmed6@ncsu.edu"
-__status__ = "Development"  # "Prototype", "Development", or "Production"
+__status__ = "Production"  # "Prototype", "Development", or "Production"
 
 ACKNOWLEDGE_MESSAGE = "College of Sciences\n\n\n"
 ACKNOWLEDGE_MESSAGE += "Please answer a few quick questions to get this \
@@ -103,9 +104,9 @@ def get_font(scaling: int, bold: bool = False) -> tuple[str, int, str]:
                                Defaults to False.
 
     Returns:
-        tuple[str, int, str]: A tuple containing the font name,
-                              the scaled size, and an optional style
-                              string (e.g., "bold").
+        (tuple[str, int, str]): A tuple containing the font name,
+                                the scaled size, and an optional style
+                                string (e.g., "bold").
     """
     if bold:
         return (BASE_FONT, scale(scaling), "normal")
@@ -349,8 +350,7 @@ def get_dropdown(current_frame: ctk.CTkFrame,
                                                 list.
 
     Returns:
-        tuple[ctk.StringVar, ctk.CTkOptionMenu]:
-
+        (tuple[ctk.StringVar, ctk.CTkOptionMenu]):
             - StringVar
             - CTkOptionMenu instance.
     """
@@ -376,8 +376,7 @@ def get_info_set(filename: str) -> tuple[set[str], set[str]]:
                         "Building Name: Department1, Department2, ...".
 
     Returns:
-        tuple[set[str], set[str]]:
-
+        (tuple[set[str], set[str]]):
             - A sorted set of unique building names (case-insensitive).
             - A sorted set of unique department names (case-insensitive), with
               "Other COS Department" appended at the end.
