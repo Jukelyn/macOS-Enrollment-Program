@@ -527,7 +527,7 @@ def save_input(first_name: str, last_name: str,
     current_time = strftime("%Y-%m-%d %H:%M:%S")
     # command = f'/usr/bin/say "{first_name} {last_name}"'
     command = (
-        f'/usr/bin/jamf recon --realname "{first_name} {last_name}"'
+        f'/usr/local/bin/jamf recon --realname "{first_name} {last_name}"'
         f' --building "{building}"'
         f' --department {DEPARTMENTS_GROUP[department]}'
     )
