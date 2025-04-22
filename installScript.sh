@@ -77,7 +77,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 echo "Running main.py..."
-python main.py
+python main.py  # May need sudo before this for the recon command in the program to work, I think... will need to test perhaps
 
 deactivate
 
