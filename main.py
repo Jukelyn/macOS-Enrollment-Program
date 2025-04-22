@@ -481,7 +481,7 @@ def building_department_input(first_name: str, last_name: str) -> None:
     get_selection_label(building_department_frame, "building")
 
     building_str_var, _ = get_dropdown(
-        building_department_frame, lambda: ALL_BUILDINGS)
+        building_department_frame, lambda: list(ALL_BUILDINGS))
 
     # def update_building_dropdown(*args):  # pylint: disable=W0613
     #     new_options = get_building_options()
