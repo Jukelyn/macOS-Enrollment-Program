@@ -49,3 +49,9 @@ This project was made possible by Mehraz Ahmed with the help of Imraan Khan.
 - Install homebrew from brew.sh
 - brew install python3 python-tk
 - Follow the above instructions
+
+
+## TODO
+
+- [ ] Make a screen that shows this is mandatory
+- [ ] Add a screen to tell ppl to click allow for the popups
