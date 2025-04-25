@@ -35,7 +35,9 @@ Dependencies:
   commands.
 """
 import subprocess
+import threading
 from time import strftime
+# from time import sleep  # Used for testing in save_input
 from typing import Callable
 
 from PIL import Image
@@ -540,16 +542,62 @@ def save_input(first_name: str, last_name: str,
     # --room [str]         '--room NCSU-[buidling]-####'
     # --department [str]   '--department NCSU-COS-[department]'
 
+    clear_root()
+
+    loading_frame = ctk.CTkFrame(root, fg_color="transparent")
+    loading_frame.pack(expand=True)
+
+    loading_label = ctk.CTkLabel(loading_frame,
+                                 text="Submitting Info...\nPlease wait.",
+                                 font=get_font(LARGER_FONT_SIZE, True))
+    loading_label.pack(pady=scale(STANDARD_PADY * 2),
+                       padx=scale(STANDARD_PADX * 2))
+
+    progress_bar = ctk.CTkProgressBar(
+        loading_frame, mode='indeterminate',
+        indeterminate_speed=1.15, width=scale(200),
+        corner_radius=40, progress_color="#0051A2"
+    )
+
+    progress_bar.pack(pady=scale(STANDARD_PADY), padx=scale(STANDARD_PADX))
+    progress_bar.start()
+
+    root.update_idletasks()
+    root.update()
+
     formatted_information = (
         f"{current_time} - {first_name} {last_name}"
         f" - {building} - {DEPARTMENTS_GROUP[department]} ({department})\n"
     )
 
-    with open("info_log.txt", "a", encoding="utf-8") as f:
-        f.write(formatted_information)
+    # def run_sleep():  # Used for testing
+    #     sleep(5)
+    #     root.after(0, root.destroy)
+    # --- Function to run in the background thread ---
 
-    subprocess.run(["bash", "-c", command], check=False)
-    root.destroy()
+    def run_jamf_command():
+        try:
+            with open("info_log.txt", "a", encoding="utf-8") as f:
+                f.write(formatted_information)
+
+            result = subprocess.run(["bash", "-c", command],
+                                    check=False,
+                                    capture_output=True,
+                                    text=True)
+
+            if result.stdout:
+                print("JAMF stdout:", result.stdout)
+            if result.stderr:
+                print("JAMF stderr:", result.stderr)
+
+        except Exception as e:  # pylint: disable=W0718
+            print(f"An error occurred during the save/submit process: {e}")
+
+        finally:
+            root.after(0, root.destroy)
+
+    thread = threading.Thread(target=run_jamf_command, daemon=True)
+    thread.start()
 
 
 # Main window
