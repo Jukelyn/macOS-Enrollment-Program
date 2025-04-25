@@ -49,9 +49,9 @@ __email__ = "mahmed6@ncsu.edu"
 __status__ = "Production"  # "Prototype", "Development", or "Production"
 
 ACKNOWLEDGE_MESSAGE = "College of Sciences\n\n\n"
-ACKNOWLEDGE_MESSAGE += "Please answer a few quick questions to get this \
-workstation properly enrolled with management."
-
+ACKNOWLEDGE_MESSAGE += 'This process is a mandatory step for the computer to \
+function correctly.\nPlease ensure that you click "Allow" on any pop-up \
+notifications associated with "jamf" or "terminal."'
 SCALING_FACTOR = 1.5  # Scale everything by 1.5
 
 # BACKGROUND_PATH = "./assets/4k_backgrounds/belltower-night-3840x2160.jpg"
@@ -573,7 +573,7 @@ frame.pack(expand=True)
 
 ctk.CTkLabel(frame, text=ACKNOWLEDGE_MESSAGE,
              font=get_font(LARGER_FONT_SIZE, True),
-             pady=scale(STANDARD_PADY * 5), padx=scale(STANDARD_PADX * 2.5),
+             pady=scale(STANDARD_PADY * 3), padx=scale(STANDARD_PADX * 2.5),
              fg_color=REYNOLDS_RED).pack(expand=True)
 
 acknowledge_button = make_button(
