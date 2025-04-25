@@ -20,13 +20,13 @@ theme:
   palette:
     - scheme: slate
       toggle:
-        icon: material/toggle-switch-off-outline 
+        icon: material/toggle-switch
         name: Switch to dark mode
       primary: teal
       accent: blue 
     - scheme: default
       toggle:
-        icon: material/toggle-switch
+        icon: material/toggle-switch-off-outline 
         name: Switch to light mode    
       primary: red
       accent: blue
