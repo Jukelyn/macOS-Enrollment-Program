@@ -17,9 +17,6 @@ ZIP_URL="https://github.com/Jukelyn/macOS-Enrollment-Program/archive/refs/heads/
 DEST_DIR="$HOME/Downloads"
 PROJECT_DIR="$DEST_DIR/macOS-Enrollment-Program-main"
 
-# Full paths for commands
-CURL_BIN="/usr/bin/curl"
-BASH_BIN="/bin/bash"
 MKDIR_BIN="/bin/mkdir"
 UNZIP_BIN="/usr/bin/unzip"
 
@@ -79,21 +76,18 @@ logme "Homebrew Installation"
 
 # Have the xcode command line tools been installed?
 logme "Checking for Xcode Command Line Tools installation"
-check=$( pkgutil --pkgs | grep -c "CLTools_Executables" )
 
-if [[ "$check" != 1 ]]; then
-    logme "Installing Xcode Command Tools"
-    # This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
-    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-    clt=$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"*" '/^ +\\*/ {print $2}' | sed 's/^ *//' | tail -n1)
-    # the above don't work in Catalina so ...
-    if [[ -z $clt ]]; then
-    	clt=$(softwareupdate -l | grep  "Label: Command" | tail -1 | sed 's#\* Label: \(.*\)#\1#')
-    fi
-    softwareupdate -i "$clt"
-    rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-    /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
-fi
+logme "Installing Xcode Command Tools"
+# This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
+touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+clt=$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"*" '/^ +\\*/ {print $2}' | sed 's/^ *//' | tail -n1)
+  # the above don't work in Catalina so ...
+  if [[ -z $clt ]]; then
+    clt=$(softwareupdate -l | grep  "Label: Command" | tail -1 | sed 's#\* Label: \(.*\)#\1#')
+  fi
+  softwareupdate -i "$clt"
+  rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+  /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
 
 # Is homebrew already installed?
 if [[ ! -e "${HOMEBREW_PREFIX}/bin/brew" ]]; then
