@@ -76,18 +76,22 @@ logme "Homebrew Installation"
 
 # Have the xcode command line tools been installed?
 logme "Checking for Xcode Command Line Tools installation"
+CLIToolsVersion=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version | cut -d ' ' -f 2)
 
-logme "Installing Xcode Command Tools"
-# This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
-touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-clt=$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"*" '/^ +\\*/ {print $2}' | sed 's/^ *//' | tail -n1)
-  # the above don't work in Catalina so ...
-  if [[ -z $clt ]]; then
-    clt=$(softwareupdate -l | grep  "Label: Command" | tail -1 | sed 's#\* Label: \(.*\)#\1#')
-  fi
-  softwareupdate -i "$clt"
-  rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-  /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+if [ -n "$CLIToolsVersion" ]; then
+    logme "Installing Xcode Command Tools"
+    # This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
+    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    clt=$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"*" '/^ +\\*/ {print $2}' | sed 's/^ *//' | tail -n1)
+    # the above don't work in Catalina so ...
+    if [[ -z $clt ]]; then
+    	clt=$(softwareupdate -l | grep  "Label: Command" | tail -1 | sed 's#\* Label: \(.*\)#\1#')
+    fi
+    softwareupdate -i "$clt"
+    rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+fi
+
 
 # Is homebrew already installed?
 if [[ ! -e "${BREW_PREFIX}/bin/brew" ]]; then
