@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to install Homebrew then run a python program to do a jamf recon.
 # Author: Mehraz Ahmed at jukelyn dot com
-# Version: 2.0 - 22 Apr 2025
+# Version: 2.3 - 7 May 2025
 # Jamf Policy Script: Install Homebrew (Non-Interactive) with Path Persistence.
 # Uncomment line 30 ("exec >> "$LOG" 2>&1") when using jamf to deploy this script.
 
