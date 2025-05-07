@@ -1,10 +1,14 @@
 #!/bin/bash
 # Script to install Homebrew then run a python program to do a jamf recon.
 # Author: Mehraz Ahmed at jukelyn dot com
-# Version: 2.0 - 22 Apr 2025
+# Version: 2.3 - 7 May 2025
 # Jamf Policy Script: Install Homebrew (Non-Interactive) with Path Persistence.
 # Uncomment line 30 ("exec >> "$LOG" 2>&1") when using jamf to deploy this script.
+
 set -e
+
+consoleuser=$(scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ && ! /loginwindow/ { print $3 }' )
+UNAME_MACHINE="$(uname -m)"
 
 # Variables
 LOGFOLDER="/private/var/log/"
@@ -13,15 +17,8 @@ ZIP_URL="https://github.com/Jukelyn/macOS-Enrollment-Program/archive/refs/heads/
 DEST_DIR="$HOME/Downloads"
 PROJECT_DIR="$DEST_DIR/macOS-Enrollment-Program-main"
 
-# Full paths for commands
-CURL_BIN="/usr/bin/curl"
-BASH_BIN="/bin/bash"
 MKDIR_BIN="/bin/mkdir"
 UNZIP_BIN="/usr/bin/unzip"
-
-BREW_PREFIX="/opt/homebrew/"
-BREW_BIN="/opt/homebrew/bin/brew"
-WGET_BIN="/opt/homebrew/bin/wget"
 
 # Create log folder if needed
 [ -d "$LOGFOLDER" ] || "$MKDIR_BIN" -p "$LOGFOLDER"
@@ -31,21 +28,162 @@ WGET_BIN="/opt/homebrew/bin/wget"
 
 echo "===== Script started at $(date) ====="
 
-# Install Homebrew non-interactively if not present
-if ! [ -x "$BREW_BIN" ]; then
-  echo "Installing Homebrew..."
-  NONINTERACTIVE=1 "$CURL_BIN" -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | "$BASH_BIN"
-  eval "$("$BREW_PREFIX/bin/brew" shellenv)"
-else
-  echo "Homebrew already installed."
+if [ ! -d "$LOGFOLDER" ]; then
+    mkdir $LOGFOLDER
 fi
+
+
+# The following install script is from
+# https://github.com/Honestpuck/homebrew.sh
+# and slightly editted to make it work
+
+# Set the prefix based on the machine type
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+    # M1/arm64 machines
+    BREW_PREFIX="/opt/homebrew"
+else
+    # Intel machines
+    BREW_PREFIX="/usr/local"
+fi
+
+if [[ -e "${BREW_PREFIX}/bin/brew" ]]; then
+    su -l "$consoleuser" -c "${BREW_PREFIX}/bin/brew update"
+    exit 0
+fi
+
+# are we in the right group
+check_grp=$(groups ${consoleuser} | grep -c '_developer')
+
+if [[ $check_grp != 1 ]]; then
+    /usr/sbin/dseditgroup -o edit -a "${consoleuser}" -t user _developer
+fi
+
+function logme()
+{
+# Check to see if function has been called correctly
+    if [ -z "$1" ] ; then
+        echo "$(date) - logme function call error: no text passed to function! Please recheck code!" | tee -a $LOG
+        exit 1
+    fi
+
+# Log the passed details
+    echo -e "$(date) - $1" | tee -a $LOG
+}
+
+# Check and start logging
+logme "Homebrew Installation"
+#############################
+# debug - commented out     #
+# remove comments if needed #
+############################# 
+# logme "user is $consoleuser"
+# logme "is user in dev group? $check_grp"
+
+# Have the xcode command line tools been installed?
+logme "Checking for Xcode Command Line Tools installation"
+CLIToolsVersion=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version | cut -d ' ' -f 2)
+
+if [ -z "$CLIToolsVersion" ]; then
+    logme "Installing Xcode Command Tools"
+    # This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
+    touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    clt=$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"*" '/^ +\\*/ {print $2}' | sed 's/^ *//' | tail -n1)
+    # the above don't work in Catalina so ...
+    if [[ -z $clt ]]; then
+    	clt=$(softwareupdate -l | grep  "Label: Command" | tail -1 | sed 's#\* Label: \(.*\)#\1#')
+    fi
+    softwareupdate -i "$clt"
+    rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
+fi
+
+# Is homebrew already installed?
+if [[ ! -e "${BREW_PREFIX}/bin/brew" ]]; then
+    # Install Homebrew. This doesn't like being run as root so we must do this manually.
+    logme "Installing Homebrew"
+
+    mkdir -p "${BREW_PREFIX}/Homebrew"
+    # Curl down the latest tarball and install to ${BREW_PREFIX}/Homebrew
+    curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "${BREW_PREFIX}/Homebrew"
+
+    # Manually make all the appropriate directories and set permissions
+    mkdir -p "${BREW_PREFIX}/Cellar" "${BREW_PREFIX}/Homebrew"
+    mkdir -p "${BREW_PREFIX}/Caskroom" "${BREW_PREFIX}/Frameworks" "${BREW_PREFIX}/bin"
+    mkdir -p "${BREW_PREFIX}/include" "${BREW_PREFIX}/lib" "${BREW_PREFIX}/opt" "${BREW_PREFIX}/etc" "${BREW_PREFIX}/sbin"
+    mkdir -p "${BREW_PREFIX}/share/zsh/site-functions" "${BREW_PREFIX}/var"
+    mkdir -p "${BREW_PREFIX}/share/doc" "${BREW_PREFIX}/man/man1" "${BREW_PREFIX}/share/man/man1"
+    #chown -R "${consoleuser}":_developer "${BREW_PREFIX}/*"
+    ##################################################################
+    ### M Lamont changed to not overwrite existing folders, e.g jamf # 
+    ###  also took th ebrackets out as this was stopping it working  #
+    ###  and No I don't know why                                     #
+    ##################################################################
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/Cellar"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/Homebrew"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/Caskroom"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/Frameworks"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/bin"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/include"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/lib"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/opt"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/etc"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/sbin"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/share"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/var"
+    chown -R "$consoleuser":_developer "${BREW_PREFIX}/man"
+
+    chmod -R g+rwx "${BREW_PREFIX}"/*
+    chmod 755 "${BREW_PREFIX}/share/zsh" "${BREW_PREFIX}/share/zsh/site-functions"
+
+    # Create a system wide cache folder  
+    mkdir -p /Library/Caches/Homebrew
+    chmod g+rwx /Library/Caches/Homebrew
+    chown "${consoleuser}:_developer" /Library/Caches/Homebrew
+
+    # put brew where we can find it
+    ln -s "${BREW_PREFIX}/Homebrew/bin/brew" "${BREW_PREFIX}/bin/brew"
+
+    # Install the MD5 checker or the recipes will fail
+    su -l "$consoleuser" -c "${BREW_PREFIX}/bin/brew install md5sha1sum"
+    echo 'export PATH="${BREW_PREFIX}/opt/openssl/bin:$PATH"' | \
+	tee -a /Users/${consoleuser}/.bash_profile /Users/${consoleuser}/.zshrc
+    chown ${consoleuser} /Users/${consoleuser}/.bash_profile /Users/${consoleuser}/.zshrc
+    
+    # clean some directory stuff for Catalina
+    chown -R root:wheel /private/tmp
+    chmod 777 /private/tmp
+    chmod +t /private/tmp
+
+    ############################
+    ## M Lamont Add to paths.d #
+    ############################
+    touch /etc/paths.d/brew
+    echo "${BREW_PREFIX}/bin" > /etc/paths.d/brew
+fi
+
+# Make sure everything is up to date
+logme "Updating Homebrew"
+su -l "$consoleuser" -c "${BREW_PREFIX}/bin/brew update" 2>&1 | tee -a ${LOG}
+
+# set shellenv for M1 users
+if [[ "$UNAME_MACHINE" == "arm64" ]]; then
+    echo 'eval $(/opt/homebrew/bin/brew shellenv)' >> /Users/${consoleuser}/.profile
+fi
+
+# logme user that all is completed
+logme "Homebrew installation complete"
+
+BREW_BIN="${BREW_PREFIX}/bin/brew"
+WGET_BIN="${BREW_PREFIX}/bin/wget"
 
 # Install wget if missing
 if ! [ -x "$WGET_BIN" ]; then
   echo "Installing wget..."
   "$BREW_BIN" install wget
+  logme "wget installation complete."
 else
   echo "wget already installed."
+  logme "wget already installed."
 fi
 
 # Create destination dir
@@ -54,14 +192,17 @@ fi
 # Download ZIP
 echo "Downloading ZIP..."
 "$WGET_BIN" -O "$DEST_DIR/main.zip" "$ZIP_URL"
+logme "Downloaded ZIP"
 
 # Unzip the project
 echo "Unzipping project..."
 "$UNZIP_BIN" -o "$DEST_DIR/main.zip" -d "$DEST_DIR"
+logme "Unzipped the ZIP"
 
 # Install python3 and python-tk
 echo "Installing python3 and python-tk..."
 "$BREW_BIN" install python3 python-tk
+logme "Installed python3 and python-tk"
 
 # Move into project directory
 cd "$PROJECT_DIR"
@@ -77,7 +218,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 echo "Running main.py..."
-python main.py  # May need sudo before this for the recon command in the program to work, I think... will need to test perhaps
+python main.py
 
 deactivate
 
