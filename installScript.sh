@@ -32,6 +32,11 @@ if [ ! -d "$LOGFOLDER" ]; then
     mkdir $LOGFOLDER
 fi
 
+
+# The following install script is from
+# https://github.com/Honestpuck/homebrew.sh
+# and slightly editted to make it work
+
 # Set the prefix based on the machine type
 if [[ "$UNAME_MACHINE" == "arm64" ]]; then
     # M1/arm64 machines
@@ -92,7 +97,6 @@ if [ -z "$CLIToolsVersion" ]; then
     /usr/bin/xcode-select --switch /Library/Developer/CommandLineTools
 fi
 
-
 # Is homebrew already installed?
 if [[ ! -e "${BREW_PREFIX}/bin/brew" ]]; then
     # Install Homebrew. This doesn't like being run as root so we must do this manually.
@@ -128,7 +132,7 @@ if [[ ! -e "${BREW_PREFIX}/bin/brew" ]]; then
     chown -R "$consoleuser":_developer "${BREW_PREFIX}/var"
     chown -R "$consoleuser":_developer "${BREW_PREFIX}/man"
 
-    chmod -R g+rwx "${BREW_PREFIX}/*"
+    chmod -R g+rwx "${BREW_PREFIX}"/*
     chmod 755 "${BREW_PREFIX}/share/zsh" "${BREW_PREFIX}/share/zsh/site-functions"
 
     # Create a system wide cache folder  
@@ -176,8 +180,10 @@ WGET_BIN="${BREW_PREFIX}/bin/wget"
 if ! [ -x "$WGET_BIN" ]; then
   echo "Installing wget..."
   "$BREW_BIN" install wget
+  logme "wget installation complete."
 else
   echo "wget already installed."
+  logme "wget already installed."
 fi
 
 # Create destination dir
@@ -186,14 +192,17 @@ fi
 # Download ZIP
 echo "Downloading ZIP..."
 "$WGET_BIN" -O "$DEST_DIR/main.zip" "$ZIP_URL"
+logme "Downloaded ZIP"
 
 # Unzip the project
 echo "Unzipping project..."
 "$UNZIP_BIN" -o "$DEST_DIR/main.zip" -d "$DEST_DIR"
+logme "Unzipped the ZIP"
 
 # Install python3 and python-tk
 echo "Installing python3 and python-tk..."
 "$BREW_BIN" install python3 python-tk
+logme "Installed python3 and python-tk"
 
 # Move into project directory
 cd "$PROJECT_DIR"
