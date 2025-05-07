@@ -4,7 +4,11 @@
 # Version: 2.0 - 22 Apr 2025
 # Jamf Policy Script: Install Homebrew (Non-Interactive) with Path Persistence.
 # Uncomment line 30 ("exec >> "$LOG" 2>&1") when using jamf to deploy this script.
+
 set -e
+
+consoleuser=$(scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ && ! /loginwindow/ { print $3 }' )
+UNAME_MACHINE="$(uname -m)"
 
 # Variables
 LOGFOLDER="/private/var/log/"
@@ -23,7 +27,7 @@ UNZIP_BIN="/usr/bin/unzip"
 [ -d "$LOGFOLDER" ] || "$MKDIR_BIN" -p "$LOGFOLDER"
 
 # Redirect all output to log file
-exec >> "$LOG" 2>&1
+# exec >> "$LOG" 2>&1
 
 echo "===== Script started at $(date) ====="
 
