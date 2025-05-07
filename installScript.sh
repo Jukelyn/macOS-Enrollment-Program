@@ -78,7 +78,7 @@ logme "Homebrew Installation"
 logme "Checking for Xcode Command Line Tools installation"
 CLIToolsVersion=$(pkgutil --pkg-info=com.apple.pkg.CLTools_Executables | grep version | cut -d ' ' -f 2)
 
-if [ -n "$CLIToolsVersion" ]; then
+if [ -z "$CLIToolsVersion" ]; then
     logme "Installing Xcode Command Tools"
     # This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
     touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
