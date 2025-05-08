@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to install Homebrew then run a python program to do a jamf recon.
 # Author: Mehraz Ahmed at jukelyn dot com
-# Version: 2.0 - 22 Apr 2025
+# Version: 2.1 - 8 May 2025
 # Jamf Policy Script: Install Homebrew (Non-Interactive) with Path Persistence.
 # Uncomment line 30 ("exec >> "$LOG" 2>&1") when using jamf to deploy this script.
 
@@ -48,7 +48,6 @@ fi
 
 if [[ -e "${BREW_PREFIX}/bin/brew" ]]; then
     su -l "$consoleuser" -c "${BREW_PREFIX}/bin/brew update"
-    exit 0
 fi
 
 # are we in the right group
@@ -173,13 +172,12 @@ fi
 # logme user that all is completed
 logme "Homebrew installation complete"
 
-BREW_BIN="${BREW_PREFIX}/bin/brew"
 WGET_BIN="${BREW_PREFIX}/bin/wget"
 
 # Install wget if missing
 if ! [ -x "$WGET_BIN" ]; then
   echo "Installing wget..."
-  "$BREW_BIN" install wget
+  su -l "$consoleuser" -c "${BREW_PREFIX}/bin/brew install wget" 2>&1 | tee -a ${LOG}
   logme "wget installation complete."
 else
   echo "wget already installed."
@@ -191,17 +189,22 @@ fi
 
 # Download ZIP
 echo "Downloading ZIP..."
-"$WGET_BIN" -O "$DEST_DIR/main.zip" "$ZIP_URL"
+"${WGET_BIN}" -O "${DEST_DIR}/main.zip" "${ZIP_URL}" 2>&1 | tee -a "${LOG}"
 logme "Downloaded ZIP"
 
 # Unzip the project
 echo "Unzipping project..."
-"$UNZIP_BIN" -o "$DEST_DIR/main.zip" -d "$DEST_DIR"
+"${UNZIP_BIN}" -o "${DEST_DIR}/main.zip" -d "${DEST_DIR}" 2>&1 | tee -a "${LOG}"
 logme "Unzipped the ZIP"
+
+# Change ownership to user
+echo "Changing ownership to ${consoleuser}:_developer..."
+chown -R "${consoleuser}:_developer" "${DEST_DIR}"
+logme "Ownership changed to ${consoleuser}:_developer"
 
 # Install python3 and python-tk
 echo "Installing python3 and python-tk..."
-"$BREW_BIN" install python3 python-tk
+su -l "$consoleuser" -c "${BREW_PREFIX}/bin/brew install python3 python-tk" 2>&1 | tee -a ${LOG}
 logme "Installed python3 and python-tk"
 
 # Move into project directory
@@ -223,3 +226,5 @@ python main.py
 deactivate
 
 echo "===== Script finished at $(date) ====="
+
+exit 0 # Not needed but apprently it's good practice
