@@ -9,16 +9,16 @@ Bureau of Mines: Other
 Dabney Hall: Chemistry
 Cox Hall: Physics, Chemistry
 Jordan Hall: MEAS
-Jordan Hall Addition: MEAS
+Jordan Addition: MEAS
 Bostian Hall: Biology
 Thomas Hall: Biology
 David Clark Labs: Biology, Statistics
-Fox Teaching Lab: Physics, Chemistry
-Grinnells Lab: Biology
+Fox Science Teaching Lab: Physics, Chemistry
+Grinnells Laboratories: Biology
 MEAS Field Lab: MEAS
 Varsity Research Building: Biology, MEAS
-Toxicology Building: Biology
+Toxicology: Biology
 Partners III: Physics, Chemistry
-Plant Sciences Building: Biology
-Cherry Building: Other
+Plant Sciences: Biology
+Cherry: Other
 SCO: SCO
