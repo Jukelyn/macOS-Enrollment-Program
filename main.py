@@ -510,18 +510,15 @@ def building_department_input(first_name: str, last_name: str) -> None:
 def save_input(first_name: str, last_name: str,
                department: str, building: str) -> None:
     """
-    Save the user's input (name, building, department) to a text file
-    and performs a system action.
-
-    The function appends the provided user input, along with the current
-    timestamp, to a file. It also executes a system command and then quits the
-    program.
+    Displays a loading screen, saves user input to a log file, runs the
+    JAMF recon command in a separate thread, and closes the application
+    upon completion.
 
     Args:
         first_name (str): The user's first name.
         last_name (str): The user's last name.
-        building (str): The selected building.
         department (str): The selected department.
+        building (str): The selected building.
 
     Returns:
         (None): This function does not return a value.
