@@ -52,8 +52,7 @@ __status__ = "Production"  # "Prototype", "Development", or "Production"
 
 ACKNOWLEDGE_MESSAGE = "College of Sciences\n\n\n"
 ACKNOWLEDGE_MESSAGE += 'This process is a mandatory step for the computer to \
-function correctly.\nPlease ensure that you click "Allow" on any pop-up \
-notifications associated with "jamf" or "terminal."'
+function correctly.'
 SCALING_FACTOR = 1.5  # Scale everything by 1.5
 
 # BACKGROUND_PATH = "./assets/4k_backgrounds/belltower-night-3840x2160.jpg"
@@ -420,6 +419,7 @@ DEPARTMENTS_GROUP = {
     "Physics": "NCSU-COS-PHYSICS",
     "SCO": "NCSU-COS-SCO",
     "Statistics": "NCSU-COS-STAT",
+    "Dean's Office": "NCSU-COS",
     "Other COS Department": "NCSU-COS"
 }
 
@@ -545,7 +545,7 @@ def save_input(first_name: str, last_name: str,
     loading_frame.pack(expand=True)
 
     loading_label = ctk.CTkLabel(loading_frame,
-                                 text="Submitting Info...\nPlease wait.",
+                                 text='Submitting Info...\nPlease wait.\nPlease ensure that you click "Allow" on any pop-up notifications associated with "jamf" or "terminal."',
                                  font=get_font(LARGER_FONT_SIZE, True))
     loading_label.pack(pady=scale(STANDARD_PADY * 2),
                        padx=scale(STANDARD_PADX * 2))
